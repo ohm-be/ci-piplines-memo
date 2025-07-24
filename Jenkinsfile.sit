@@ -4,11 +4,44 @@ pipeline {
         string(name: 'TAG_VERSION', defaultValue: '', description: 'Tag to deploy')
     }
     stages {
-        stage('Deploy to SIT') {
+        stage('Check Tag Exists') {
             steps {
-                echo "Deploying SIT with TAG: ${params.TAG_VERSION}"
-                // deploy SIT logic
+                script {
+                    def result = sh(
+                        script: "git ls-remote --tags https://github.com/ohm-be/ci-piplines-memo.git refs/tags/${params.TAG_VERSION}",
+                        returnStatus: true
+                    )
+                    if (result != 0) {
+                        error "Tag '${params.TAG_VERSION}' does not exist in repository!"
+                    }
+                }
             }
         }
+
+        stage('Checkout SIT Branch') {
+           steps {
+               // Clone repo and checkout sit branch
+               git branch: 'sit', url: 'https://github.com/ohm-be/ci-piplines-memo.git'
+           }
+       }
+
+       stage('Merge Tag to SIT') {
+           steps {
+               script {
+                   sh """
+                       git fetch --tags
+                       git merge origin/${params.TAG_VERSION} --no-ff -m "Merge tag ${params.TAG_VERSION} to sit"
+                       git push origin HEAD:sit
+                   """
+               }
+           }
+       }
+
+       stage('Deploy to SIT') {
+           steps {
+               echo "Deploying SIT with TAG: ${params.TAG_VERSION}"
+               // deploy SIT logic here
+           }
+       }
     }
 }
