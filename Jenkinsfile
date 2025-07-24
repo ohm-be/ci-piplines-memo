@@ -1,36 +1,32 @@
 
 pipeline {
     agent any
-
-    options {
-        disableConcurrentBuilds()
-    }
-    triggers {
-        pollSCM('') // ปิด polling
-    }
-
-    parameters {
-        string(name: 'TAG_NAME', defaultValue: '', description: 'Git tag to build')
-    }
-    stages {
-            stage('Validate Tag..') {
+        triggers {
+            githubPush() // Responds to webhook push and tag events
+        }
+        options {
+            skipDefaultCheckout()
+        }
+        stages {
+            stage('Checkout') {
+                steps {
+                    checkout scm
+                }
+            }
+            stage('Build') {
                 when {
-                    expression { params.TAG_NAME?.trim() != '' }
+                    expression {
+                        return env.GIT_TAG_NAME != null
+                    }
                 }
                 steps {
-                    echo "Tag to build: ${params.TAG_NAME}"
+                    echo "Building tag: ${env.GIT_TAG_NAME}"
+                    // Your build steps
                 }
             }
-            stage('Checkout Tag') {
-                steps {
-                    checkout([
-                        $class: 'GitSCM',
-                        branches: [[name: "refs/tags/${params.TAG_NAME}"]],
-                        userRemoteConfigs: [[url: 'https://github.com/your-org/your-repo.git']]
-                    ])
-                    echo "Checked out tag ... ${params.TAG_NAME}"
-                }
-            }
+        }
+        environment {
+            GIT_TAG_NAME = sh(script: "git describe --tags", returnStdout: true).trim()
         }
 
 //     stages {
