@@ -48,13 +48,13 @@ pipeline {
 //             }
 //         }
 //     }
-    post {
-        always {
-            echo "Cleaning up workspace..."
-            cleanWs()
-        }
-        failure {
-            echo "Pipeline failed, consider sending Slack/Email alert"
-        }
-    }
+//     post {
+//         always {
+//             echo "Cleaning up workspace..."
+//             cleanWs()
+//         }
+//         failure {
+//             echo "Pipeline failed, consider sending Slack/Email alert"
+//         }
+//     }
 }
