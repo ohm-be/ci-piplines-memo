@@ -1,0 +1,22 @@
+pipeline {
+    agent any
+    parameters {
+        string(name: 'TAG_VERSION', defaultValue: '', description: 'Tag to deploy')
+    }
+    stages {
+        stage('Deploy to CI') {
+            steps {
+                echo "Deploying CI with TAG: ${params.TAG_VERSION}"
+                // deploy CI logic
+            }
+        }
+        stage('Trigger SIT Job') {
+            steps {
+                build job: 'sit-environment',
+                      parameters: [
+                          string(name: 'TAG', value: "${params.TAG_VERSION}")
+                      ]
+            }
+        }
+    }
+}
