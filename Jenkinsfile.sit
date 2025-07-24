@@ -1,12 +1,12 @@
 pipeline {
     agent any
     parameters {
-        string(name: 'TAG', defaultValue: '', description: 'Tag to deploy')
+        string(name: 'TAG_VERSION', defaultValue: '', description: 'Tag to deploy')
     }
     stages {
         stage('Deploy to SIT') {
             steps {
-                echo "Deploying SIT with TAG: ${params.TAG}"
+                echo "Deploying SIT with TAG: ${params.TAG_VERSION}"
                 // deploy SIT logic
             }
         }
