@@ -1,0 +1,7 @@
+dev:
+  namespace: memo-dev
+  slack_channel: dev-alerts
+
+sit:
+  namespace: memo-sit
+  slack_channel: sit-alerts
