@@ -1,33 +1,19 @@
 
 pipeline {
-    agent any
-        triggers {
-            githubPush() // Responds to webhook push and tag events
-        }
-        options {
-            skipDefaultCheckout()
-        }
-        stages {
-            stage('Checkout') {
-                steps {
-                    checkout scm
+agent any
+    stages {
+        stage('Build only on tag') {
+            when {
+                expression {
+                    return env.GIT_TAG_NAME != null && env.GIT_TAG_NAME != ''
                 }
             }
-            stage('Build') {
-                when {
-                    expression {
-                        return env.GIT_TAG_NAME != null
-                    }
-                }
-                steps {
-                    echo "Building tag: ${env.GIT_TAG_NAME}"
-                    // Your build steps
-                }
+            steps {
+                echo "Running on tag: ${env.GIT_TAG_NAME}"
+                // build commands here
             }
         }
-        environment {
-            GIT_TAG_NAME = sh(script: "git describe --tags", returnStdout: true).trim()
-        }
+    }
 
 //     stages {
 //         stage('Build') {
