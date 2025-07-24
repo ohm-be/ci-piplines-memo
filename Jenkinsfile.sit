@@ -30,7 +30,9 @@ pipeline {
                script {
                    sh """
                        git fetch --tags
-                       git merge origin/${params.TAG_VERSION} --no-ff -m "Merge tag ${params.TAG_VERSION} to sit"
+                       COMMIT_ID=\$(git rev-list -n 1 ${params.TAG_VERSION})
+                       echo "Merging tag ${params.TAG_VERSION} (commit \$COMMIT_ID) into sit"
+                       git merge \$COMMIT_ID --no-ff -m "Merge tag ${params.TAG_VERSION} to sit"
                        git push origin HEAD:sit
                    """
                }
