@@ -4,19 +4,31 @@ pipeline {
 
     environment {
         IMAGE_NAME = "myregistry/myapp:${BUILD_NUMBER}"
+        echo "IMAGE_NAME: ${IMAGE_NAME}"
     }
 
     stages {
-        stage('Build if Tag') {
-            when {
-                buildingTag()
+            stage('Build if Tag') {
+                when {
+                    buildingTag()
+                }
+                steps {
+                    echo "Building for Git Tag: ${env.TAG_NAME}"
+                    // Add your build steps here
+                }
             }
-            steps {
-                echo "Building for Tag: ${env.TAG_NAME}"
-                // build logic here
+
+            stage('Skip for non-tag') {
+                when {
+                    not {
+                        buildingTag()
+                    }
+                }
+                steps {
+                    echo "This is not a tag build. Skipping build..."
+                }
             }
         }
-    }
 
 
 //     stages {
