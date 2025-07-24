@@ -2,11 +2,6 @@
 pipeline {
     agent any
 
-    environment {
-        IMAGE_NAME = "myregistry/myapp:${BUILD_NUMBER}"
-        echo "IMAGE_NAME: ${IMAGE_NAME}"
-    }
-
     stages {
             stage('Build if Tag') {
                 when {
