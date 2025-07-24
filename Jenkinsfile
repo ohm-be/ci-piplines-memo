@@ -1,21 +1,11 @@
 pipeline {
   agent any
-  stages {
-    stage('Check if this is a tag') {
-      steps {
-        script {
-          def tagName = sh(script: "git describe --tags --exact-match HEAD || true", returnStdout: true).trim()
-          if (tagName == "") {
-            echo "Not a tag, skipping build"
-            currentBuild.result = 'NOT_BUILT'
-            error("Stopping build because this is not a tag")
-          } else {
-            echo "Building for tag: ${tagName}"
-          }
-        }
-      }
-    }
 
+  parameters {
+    string(name: 'TAG_NAME', defaultValue: '', description: 'Git tag to build')
+  }
+
+  stages {
     stage('Build') {
       steps {
         echo "Run your build step here..."
