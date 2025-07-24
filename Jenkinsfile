@@ -13,7 +13,7 @@ pipeline {
         string(name: 'TAG_NAME', defaultValue: '', description: 'Git tag to build')
     }
     stages {
-            stage('Validate Tag') {
+            stage('Validate Tag..') {
                 when {
                     expression { params.TAG_NAME?.trim() != '' }
                 }
