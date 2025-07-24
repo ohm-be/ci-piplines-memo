@@ -1,6 +1,6 @@
 package memo.ci_cd
 
-class Docker implements Serializable {
+class Docker{
     def steps
 
     Docker(steps) {

@@ -6,35 +6,51 @@ pipeline {
         IMAGE_NAME = "myregistry/myapp:${BUILD_NUMBER}"
     }
 
+pipeline {
+    agent any
     stages {
-        stage('Build') {
-            steps {
-                buildJavaApp()
+        stage('Build if Tag') {
+            when {
+                buildingTag()
             }
-        }
-
-        stage('Security Scan (Trivy)') {
             steps {
-                sh '''
-                  trivy --version
-                  trivy image --severity HIGH,CRITICAL --no-progress --format table ${IMAGE_NAME} || true
-                '''
-                archiveArtifacts artifacts: 'trivy-report.json', fingerprint: true
-            }
-        }
-
-        stage('Test') {
-            steps {
-                runTests()
-            }
-        }
-
-        stage('Deploy') {
-            steps {
-                deployToK8s("dev")
+                echo "Building for Tag: ${env.TAG_NAME}"
+                // build logic here
             }
         }
     }
+}
+
+
+//     stages {
+//         stage('Build') {
+//             steps {
+//                 buildJavaApp()
+//             }
+//         }
+//
+//         stage('Security Scan (Trivy)') {
+//             steps {
+//                 sh '''
+//                   trivy --version
+//                   trivy image --severity HIGH,CRITICAL --no-progress --format table ${IMAGE_NAME} || true
+//                 '''
+//                 archiveArtifacts artifacts: 'trivy-report.json', fingerprint: true
+//             }
+//         }
+//
+//         stage('Test') {
+//             steps {
+//                 runTests()
+//             }
+//         }
+//
+//         stage('Deploy') {
+//             steps {
+//                 deployToK8s("dev")
+//             }
+//         }
+//     }
     post {
         always {
             echo "Cleaning up workspace..."
