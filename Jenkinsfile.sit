@@ -20,8 +20,13 @@ pipeline {
 
         stage('Checkout SIT Branch') {
             steps {
-                // เช็คเอาท์ sit branch ด้วย HTTPS (หรือเปลี่ยนเป็น SSH ถ้าต้องการ)
-                git branch: 'sit', url: 'git@github.com:ohm-be/ci-piplines-memo.git'
+                sshagent(['86de2155-3c7d-4040-bc49-3af4ff08aef9']) {
+                    sh '''
+                        mkdir -p ~/.ssh
+                        ssh-keyscan github.com >> ~/.ssh/known_hosts
+                    '''
+                    git branch: 'sit', url: 'git@github.com:ohm-be/ci-piplines-memo.git'
+                }
             }
         }
 
