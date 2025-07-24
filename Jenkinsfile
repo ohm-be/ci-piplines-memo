@@ -2,17 +2,36 @@
 pipeline {
     agent any
 
+    options {
+        disableConcurrentBuilds()
+    }
+    triggers {
+        pollSCM('') // ปิด polling
+    }
+
+    parameters {
+        string(name: 'TAG_NAME', defaultValue: '', description: 'Git tag to build')
+    }
     stages {
-            stage('Build for Tag') {
+            stage('Validate Tag') {
                 when {
-                    buildingTag()
+                    expression { params.TAG_NAME?.trim() != '' }
                 }
                 steps {
-                    echo "Building tag ${env.GIT_BRANCH} or ${env.TAG_NAME} ..."
-                    // build steps
+                    echo "Tag to build: ${params.TAG_NAME}"
                 }
             }
-
+            stage('Checkout Tag') {
+                steps {
+                    checkout([
+                        $class: 'GitSCM',
+                        branches: [[name: "refs/tags/${params.TAG_NAME}"]],
+                        userRemoteConfigs: [[url: 'https://github.com/your-org/your-repo.git']]
+                    ])
+                    echo "Checked out tag ${params.TAG_NAME}"
+                }
+            }
+        }
 
 //     stages {
 //         stage('Build') {
