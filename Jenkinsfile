@@ -6,8 +6,6 @@ pipeline {
         IMAGE_NAME = "myregistry/myapp:${BUILD_NUMBER}"
     }
 
-pipeline {
-    agent any
     stages {
         stage('Build if Tag') {
             when {
@@ -19,7 +17,6 @@ pipeline {
             }
         }
     }
-}
 
 
 //     stages {
