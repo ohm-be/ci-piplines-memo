@@ -20,7 +20,7 @@ pipeline {
 
         stage('Checkout SIT Branch') {
             steps {
-                sshagent(['86de2155-3c7d-4040-bc49-3af4ff08aef9']) {
+                sshagent(['00b2ca9c-abdb-4c70-b3e7-69cc52939a3c']) {
                     sh '''
                         mkdir -p ~/.ssh
                         ssh-keyscan github.com >> ~/.ssh/known_hosts
@@ -32,7 +32,7 @@ pipeline {
 
         stage('Merge Tag to SIT') {
             steps {
-                sshagent(['86de2155-3c7d-4040-bc49-3af4ff08aef9']) {
+                sshagent(['00b2ca9c-abdb-4c70-b3e7-69cc52939a3c']) {
                     sh """
                         git config user.email "tanawat.kwork@gmail.com"
                         git config user.name "Jenkins CI"
