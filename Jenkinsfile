@@ -3,27 +3,16 @@ pipeline {
     agent any
 
     stages {
-            stage('Build Only on Tag Creation') {
+            stage('Build for Tag') {
                 when {
-                    expression {
-                        return env.GIT_BRANCH?.startsWith('refs/tags/')
-                    }
+                    buildingTag()
                 }
                 steps {
-                    echo "Building for tag: ${env.GIT_BRANCH}"
+                    echo "Building tag ${env.GIT_BRANCH} or ${env.TAG_NAME}"
+                    // build steps
                 }
             }
-            stage('Skip Non Tag') {
-                when {
-                    expression {
-                        return !env.GIT_BRANCH?.startsWith('refs/tags/')
-                    }
-                }
-                steps {
-                    echo "Not a tag creation event, skipping build."
-                }
-            }
-        }
+
 
 //     stages {
 //         stage('Build') {
