@@ -28,7 +28,7 @@ pipeline {
                         branches: [[name: "refs/tags/${params.TAG_NAME}"]],
                         userRemoteConfigs: [[url: 'https://github.com/your-org/your-repo.git']]
                     ])
-                    echo "Checked out tag ${params.TAG_NAME}"
+                    echo "Checked out tag ... ${params.TAG_NAME}"
                 }
             }
         }
