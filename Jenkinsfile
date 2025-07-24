@@ -1,76 +1,50 @@
 pipeline {
-  agent any
+    agent any
 
-  parameters {
-    string(name: 'TAG_NAME', defaultValue: '', description: 'Git tag to build')
-  }
-
-  stages {
-    stage('Build') {
-      steps {
-        echo "Run your build step here..."
-        echo "tag address: ${params.TAG_NAME}"
-      }
+    options {
+        disableConcurrentBuilds()
     }
-  }
+
+    triggers {
+        // ปิด PollSCM
+        // GitHub webhook จะเป็นตัว trigger
+    }
+
+    environment {
+        REPO_URL = 'https://github.com/ohm-be/ci-piplines-memo.git'
+    }
+
+    stages {
+        stage('Run only for Tag') {
+            when {
+                buildingTag()
+            }
+            steps {
+                echo "Triggered by tag: ${env.GIT_TAG}"
+            }
+        }
+
+        stage('Checkout Tag') {
+            when {
+                buildingTag()
+            }
+            steps {
+                checkout([
+                    $class: 'GitSCM',
+                    branches: [[name: "refs/tags/${env.GIT_TAG}"]],
+                    userRemoteConfigs: [[url: "${env.REPO_URL}"]]
+                ])
+                echo "Checked out tag: ${env.GIT_TAG}"
+            }
+        }
+
+        stage('Build') {
+            when {
+                buildingTag()
+            }
+            steps {
+                echo "🚀 Building code from tag: ${env.GIT_TAG}"
+            }
+        }
+    }
 }
-
-
-
-
-// pipeline {
-// agent any
-//     stages {
-//         stage('Build only on tag') {
-//             when {
-//                 expression {
-//                     return env.GIT_TAG_NAME != null && env.GIT_TAG_NAME != ''
-//                 }
-//             }
-//             steps {
-//                 echo "Running on tag: ${env.GIT_TAG_NAME}"
-//                 // build commands here
-//             }
-//         }
-//     }
-//
-// //     stages {
-// //         stage('Build') {
-// //             steps {
-// //                 buildJavaApp()
-// //             }
-// //         }
-// //
-// //         stage('Security Scan (Trivy)') {
-// //             steps {
-// //                 sh '''
-// //                   trivy --version
-// //                   trivy image --severity HIGH,CRITICAL --no-progress --format table ${IMAGE_NAME} || true
-// //                 '''
-// //                 archiveArtifacts artifacts: 'trivy-report.json', fingerprint: true
-// //             }
-// //         }
-// //
-// //         stage('Test') {
-// //             steps {
-// //                 runTests()
-// //             }
-// //         }
-// //
-// //         stage('Deploy') {
-// //             steps {
-// //                 deployToK8s("dev")
-// //             }
-// //         }
-// //     }
-// //     post {
-// //         always {
-// //             echo "Cleaning up workspace..."
-// //             cleanWs()
-// //         }
-// //         failure {
-// //             echo "Pipeline failed, consider sending Slack/Email alert"
-// //         }
-// //     }
-// }
-
