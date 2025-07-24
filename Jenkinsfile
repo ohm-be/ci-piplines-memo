@@ -20,7 +20,7 @@ pipeline {
                     }
                 }
                 steps {
-                    echo "This is not a tag build. Skipping build....."
+                    echo "This is not a tag build. Skipping build......"
                 }
             }
         }
