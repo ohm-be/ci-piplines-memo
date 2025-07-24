@@ -1,0 +1,39 @@
+pipeline {
+    agent any
+
+    parameters {
+        string(name: 'TAG_VERSION', defaultValue: '', description: 'Tag to deploy')
+    }
+
+    stages {
+        stage('Check Tag Exists') {
+            steps {
+                script {
+                    def result = sh(
+                        script: "git ls-remote --tags https://github.com/ohm-be/ci-piplines-memo.git refs/tags/${params.TAG_VERSION}",
+                        returnStatus: true
+                    )
+                    if (result != 0) {
+                        error "Tag '${params.TAG_VERSION}' does not exist in repository!"
+                    }
+                }
+            }
+        }
+
+        stage('Deploy to CI') {
+            steps {
+                echo "Deploying CI with TAG: ${params.TAG_VERSION}"
+                // deploy CI logic
+            }
+        }
+
+        stage('Trigger SIT Job') {
+            steps {
+                build job: 'sit-environment',
+                      parameters: [
+                          string(name: 'TAG_VERSION', value: "${params.TAG_VERSION}")
+                      ]
+            }
+        }
+    }
+}
