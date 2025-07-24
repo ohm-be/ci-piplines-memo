@@ -5,11 +5,6 @@ pipeline {
         disableConcurrentBuilds()
     }
 
-    triggers {
-        // ปิด PollSCM
-        // GitHub webhook จะเป็นตัว trigger
-    }
-
     environment {
         REPO_URL = 'https://github.com/ohm-be/ci-piplines-memo.git'
     }
