@@ -1,4 +1,3 @@
-@Library('ci-shared-lib') _
 
 pipeline {
     agent any
@@ -34,6 +33,15 @@ pipeline {
             steps {
                 deployToK8s("dev")
             }
+        }
+    }
+    post {
+        always {
+            echo "Cleaning up workspace..."
+            cleanWs()
+        }
+        failure {
+            echo "Pipeline failed, consider sending Slack/Email alert"
         }
     }
 }
