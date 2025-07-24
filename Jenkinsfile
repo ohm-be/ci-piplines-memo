@@ -9,6 +9,7 @@ pipeline {
     stage('Build') {
       steps {
         echo "Run your build step here..."
+        echo "tag address: ${params.TAG_NAME}"
       }
     }
   }
