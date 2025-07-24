@@ -28,9 +28,11 @@ pipeline {
        stage('Merge Tag to SIT') {
            steps {
                script {
+                   sshagent(['86de2155-3c7d-4040-bc49-3af4ff08aef9'])
                    sh """
                        git config user.email "tanawat.kwork@gmail.com"
                        git config user.name "Jenkins CI"
+                       git remote set-url origin git@github.com:ohm-be/ci-piplines-memo.git
 
                        git fetch --tags
                        COMMIT_ID=\$(git rev-list -n 1 ${params.TAG_VERSION})
