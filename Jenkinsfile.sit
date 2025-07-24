@@ -19,36 +19,34 @@ pipeline {
         }
 
         stage('Checkout SIT Branch') {
-           steps {
-               // Clone repo and checkout sit branch
-               git branch: 'sit', url: 'https://github.com/ohm-be/ci-piplines-memo.git'
-           }
-       }
+            steps {
+                // เช็คเอาท์ sit branch ด้วย HTTPS (หรือเปลี่ยนเป็น SSH ถ้าต้องการ)
+                git branch: 'sit', url: 'git@github.com:ohm-be/ci-piplines-memo.git'
+            }
+        }
 
-       stage('Merge Tag to SIT') {
-           steps {
-               script {
-                   sshagent(['86de2155-3c7d-4040-bc49-3af4ff08aef9'])
-                   sh """
-                       git config user.email "tanawat.kwork@gmail.com"
-                       git config user.name "Jenkins CI"
-                       git remote set-url origin git@github.com:ohm-be/ci-piplines-memo.git
+        stage('Merge Tag to SIT') {
+            steps {
+                sshagent(['86de2155-3c7d-4040-bc49-3af4ff08aef9']) {
+                    sh """
+                        git config user.email "tanawat.kwork@gmail.com"
+                        git config user.name "Jenkins CI"
 
-                       git fetch --tags
-                       COMMIT_ID=\$(git rev-list -n 1 ${params.TAG_VERSION})
-                       echo "Merging tag ${params.TAG_VERSION} (commit \$COMMIT_ID) into sit"
-                       git merge \$COMMIT_ID --no-ff -m "Merge tag ${params.TAG_VERSION} to sit"
-                       git push origin HEAD:sit
-                   """
-               }
-           }
-       }
+                        git fetch --tags
+                        COMMIT_ID=\$(git rev-list -n 1 ${params.TAG_VERSION})
+                        echo "Merging tag ${params.TAG_VERSION} (commit \$COMMIT_ID) into sit"
+                        git merge \$COMMIT_ID --no-ff -m "Merge tag ${params.TAG_VERSION} to sit"
+                        git push origin HEAD:sit
+                    """
+                }
+            }
+        }
 
-       stage('Deploy to SIT') {
-           steps {
-               echo "Deploying SIT with TAG: ${params.TAG_VERSION}"
-               // deploy SIT logic here
-           }
-       }
+        stage('Deploy to SIT') {
+            steps {
+                echo "Deploying SIT with TAG: ${params.TAG_VERSION}"
+                // deploy SIT logic here
+            }
+        }
     }
 }
